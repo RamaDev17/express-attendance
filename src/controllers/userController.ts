@@ -24,6 +24,7 @@ export const getDetailUser = async (
     });
     res.status(200).json({ status: 200, data: detailUser });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -40,6 +41,7 @@ export const getAllUser = async (req: Request, res: Response) => {
     });
     res.status(200).json({ status: 200, data: users });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -65,5 +67,8 @@ export const createUser = async (req: Request, res: Response) => {
         email: user.email,
       },
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
