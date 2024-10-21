@@ -34,8 +34,8 @@ model User {
 model Office {
   id        String @id @unique @default(uuid())
   name      String
-  latitude  BigInt
-  longitude BigInt
+  latitude  Float
+  longitude Float
   radius    Int
 
   created_at DateTime @default(now())
