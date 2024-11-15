@@ -3,9 +3,12 @@ import "dotenv/config";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import officeRoutes from "./routes/officeRoutes";
+import cors from "cors";
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(cors());
 
 app.use(express.json());
 
