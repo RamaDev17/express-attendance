@@ -4,12 +4,17 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import officeRoutes from "./routes/officeRoutes";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
-
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+app.use(cookieParser());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);

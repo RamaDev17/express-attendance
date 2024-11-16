@@ -15,14 +15,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   });
 
   if (!checkUser) {
-    res.status(404).json({ message: "Login failed" });
+    res.status(401).json({ message: "Login failed" });
     return;
   }
 
   const checPassword = await bcrypt.compare(password, checkUser.password);
 
   if (!checPassword) {
-    res.status(404).json({ message: "Login failed" });
+    res.status(401).json({ message: "Login failed" });
     return;
   }
 
@@ -33,6 +33,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       expiresIn: "1d",
     }
   );
+
+  // Set cookie dengan token
+  res.cookie("auth_token", token, {
+    httpOnly: true, 
+    secure: false,
+    sameSite: "strict",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 
   res.status(200).json({
     status: 200,
