@@ -5,11 +5,30 @@ const prisma = new PrismaClient();
 
 const getAllOffice = async (req: Request, res: Response): Promise<void> => {
   try {
-    const data = await prisma.office.findMany();
+    const page = parseInt(req.query.page as string) || 1; // Default halaman pertama
+    const limit = parseInt(req.query.limit as string) || 10; // Default 10 data per halaman
+    const skip = (page - 1) * limit;
 
-    res
-      .status(200)
-      .json({ status: 200, message: "get all office success", data: data });
+    // Query dengan pagination
+    const [data, total] = await Promise.all([
+      prisma.office.findMany({
+        skip: skip,
+        take: limit,
+      }),
+      prisma.office.count(), // Hitung total data
+    ]);
+
+    res.status(200).json({
+      status: 200,
+      message: "Get all office success",
+      data: data,
+      pagination: {
+        totalItems: total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     console.log(error);
 
