@@ -3,6 +3,7 @@ import "dotenv/config";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import officeRoutes from "./routes/officeRoutes";
+import shiftRoutes from "./routes/shiftRoutes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/offices", officeRoutes);
+app.use("/api/shifts", shiftRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({
