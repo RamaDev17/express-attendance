@@ -5,34 +5,58 @@ const prisma = new PrismaClient();
 
 const getAllOffice = async (req: Request, res: Response): Promise<void> => {
   try {
-    const page = parseInt(req.query.page as string) || 1; // Default halaman pertama
-    const limit = parseInt(req.query.limit as string) || 10; // Default 10 data per halaman
+    // Parsing dan validasi query parameter
+    const page = Math.max(parseInt(req.query.page as string, 10) || 1, 1); // Minimal 1
+    const limit = Math.max(parseInt(req.query.limit as string, 10) || 10, 1); // Minimal 1
+    const keyword = ((req.query.keyword as string) || "").trim(); // Hilangkan spasi berlebih
+
     const skip = (page - 1) * limit;
 
-    // Query dengan pagination
+    // Query dengan pagination dan filter
     const [data, total] = await Promise.all([
       prisma.office.findMany({
-        skip: skip,
+        skip,
         take: limit,
+        where: {
+          name: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+        },
+        orderBy: {
+          name: "asc",
+        },
       }),
-      prisma.office.count(), // Hitung total data
+      prisma.office.count({
+        where: {
+          name: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+        },
+      }),
     ]);
 
+    // Respon dengan pagination lengkap
     res.status(200).json({
       status: 200,
       message: "Get all office success",
-      data: data,
+      data,
       pagination: {
         totalItems: total,
-        totalPages: Math.ceil(total / limit),
         currentPage: page,
+        totalPages: Math.ceil(total / limit),
         pageSize: limit,
+        currentItems: data.length, // Jumlah data di halaman saat ini
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching offices:", error);
 
-    res.status(500).json({ status: 500, message: "Internal server error" });
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+    });
   }
 };
 
@@ -43,9 +67,9 @@ const createOffice = async (req: Request, res: Response): Promise<void> => {
     const data = await prisma.office.create({
       data: {
         name: name,
-        latitude: latitude,
-        longitude: longitude,
-        radius: radius,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+        radius: Number(radius),
       },
     });
 
@@ -90,9 +114,9 @@ const updateOffice = async (req: Request, res: Response): Promise<void> => {
       },
       data: {
         name: name,
-        latitude: latitude,
-        longitude: longitude,
-        radius: radius,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+        radius: Number(radius),
       },
     });
 
