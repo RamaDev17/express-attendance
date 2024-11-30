@@ -43,3 +43,15 @@ model Office {
 
   @@map("offices")
 }
+
+model Shift {
+  id         String @id @unique @default(uuid())
+  name       String
+  start_time String
+  end_time   String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("shifts")
+}
